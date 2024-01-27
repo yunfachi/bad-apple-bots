@@ -59,7 +59,7 @@ class MCBot {
             if (this.bot.entity.position.x!=this.x || this.bot.entity.position.y!=this.y || this.bot.entity.position.z!=this.z) {
                 this.bot.chat(`/tp ${this.username} ${this.x} ${this.y} ${this.z} ${yaw} ${pitch}`);
             };
-            this.giveShields();
+            //this.giveShields();
             this.getShields();
 
             //console.log(`[${this.username}] Ready!`);
@@ -114,9 +114,6 @@ let offset = {
     }
 };
 
-const width = start.x-end.x-offset.plus.x-offset.minus.x
-const height = start.y-end.y-offset.plus.y-offset.minus.y
-
 const yaw=165
 const pitch=0
 
@@ -133,6 +130,9 @@ if (process.argv.indexOf("--offset") != -1) {
     offset.minus.x = Number(offset_list[2]);
     offset.minus.y = Number(offset_list[3]);
 };
+
+const width = start.x-end.x-offset.plus.x-offset.minus.x;
+const height = start.y-end.y-offset.plus.y-offset.minus.y;
 
 let bots = [];
 for (let y = 0; y < height; y++) {
