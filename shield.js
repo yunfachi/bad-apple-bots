@@ -1,10 +1,29 @@
 import mineflayer from "mineflayer";
+import { program } from "commander";
 import { GENERATED } from "./generated.js";
 import { setTimeout } from "timers";
 
+program
+  .option("-h, --host <host>", "", "localhost")
+  .option("-p, --port <port>", "", "25565")
+  .option("-u, --username <prefix>", "prefix before the ID of the bot. <prefix><x>_<y>", "yunfachi_")
+
+  .option("-o, --offset <offset...>", "", ["0", "0", "0", "0"])
+  .option("-y, --yaw [degress]", "", 165)
+
+  .option("-sx, --startx [x]", "", 150)
+  .option("-sy, --starty [y]", "", 150)
+  .option("-sz, --startz [z]", "", 100)
+  .option("-ex, --endx [x]", "", 100)
+  .option("-ey, --endy [y]", "", 100)
+  .option("-ez, --endz [z]", "", 100)
+  .parse(process.argv);
+
+const options = program.opts();
+
 let botArgs = {
-    host: "localhost",
-    port: "25565",
+    host: options.host,
+    port: options.port,
     physicsEnabled: false
 };
 
@@ -94,14 +113,14 @@ function playOnce(animation, fps) {
 };
 
 const start = {
-    x: 296,
-    y: 88,
-    z: -1215
+    x: options.startx,
+    y: options.starty,
+    z: options.startz
 };
 const end = {
-    x: 278,
-    y: 70,
-    z: -1215
+    x: options.endx,
+    y: options.endy,
+    z: options.endz
 };
 let offset = {
     plus: {
@@ -114,22 +133,19 @@ let offset = {
     }
 };
 
-const yaw=165
+const yaw=options.yaw
 const pitch=0
 
-if (process.argv.indexOf("--offset") != -1) {
-    let offset_list = Array(4).fill(0);
-    let offset_arg = process.argv.slice(process.argv.indexOf("--offset")+1, process.argv.indexOf("--offset")+5)
-
-    for (let index = 0; index < offset_arg.length; index++) {
-        offset_list[index] = offset_arg[index];
-    };
-
-    offset.plus.x = Number(offset_list[0]);
-    offset.plus.y = Number(offset_list[1]);
-    offset.minus.x = Number(offset_list[2]);
-    offset.minus.y = Number(offset_list[3]);
+let offset_list = Array(4).fill(0);
+let offset_arg = options.offset;
+for (let index = 0; index < offset_arg.length && index < 4; index++) {
+    offset_list[index] = offset_arg[index];
 };
+offset.plus.x = Number(offset_list[0]);
+offset.plus.y = Number(offset_list[1]);
+offset.minus.x = Number(offset_list[2]);
+offset.minus.y = Number(offset_list[3]);
+
 
 const width = start.x-end.x-offset.plus.x-offset.minus.x;
 const height = start.y-end.y-offset.plus.y-offset.minus.y;
@@ -139,7 +155,7 @@ for (let y = 0; y < height; y++) {
     bots[y] = [];
     for (let x = 0; x < width; x++) {
         bots[y][x] = new MCBot(
-            `yunfachi_${y+offset.plus.y}_${x+offset.plus.x}`,
+            `${options.username}${y+offset.plus.y}_${x+offset.plus.x}`,
             Math.max(start.x,end.x)-offset.plus.x-x+0.5,
             start.y-offset.plus.y-y,
             start.z+0.5

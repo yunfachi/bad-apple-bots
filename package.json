@@ -1,6 +1,11 @@
 {
   "type": "module",
+  "main": "shield.js",
+  "scripts": {
+    "start": "node shield.js"
+  },
   "dependencies": {
-    "mineflayer": "^4.18.0"
+    "mineflayer": "^4.18.0",
+    "commander": "^12.0.0"
   }
 }
