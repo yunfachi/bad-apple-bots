@@ -1,5 +1,5 @@
 import mineflayer from "mineflayer";
-import { BADAPPLE } from "./badapple.js";
+import { GENERATED } from "./generated.js";
 import { setTimeout } from "timers";
 
 let botArgs = {
@@ -158,7 +158,7 @@ let waitBots = function() {
                 };
             };
         };
-        playOnce(BADAPPLE, 30);
+        playOnce(GENERATED, 30);
     }, 1000);
 };
 waitBots();
