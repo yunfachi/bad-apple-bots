@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 
+#TODO:  the difference between the start and end coordinates
+size = (18,18)
+
 def video_to_array(path):
     video = cv2.VideoCapture(path)
     frames = []
@@ -10,7 +13,7 @@ def video_to_array(path):
         if not ret:
             break
 
-        frame = cv2.resize(frame, (18,18)) 
+        frame = cv2.resize(frame, size) 
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         _, frame_binary = cv2.threshold(frame_gray, 128, 255, cv2.THRESH_BINARY)
         frames.append((frame_binary // 255).tolist())
