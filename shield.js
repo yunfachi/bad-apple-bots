@@ -122,14 +122,14 @@ function playOnce(animation, fps) {
 };
 
 const start = {
-    x: options.startx,
-    y: options.starty,
-    z: options.startz
+    x: parseFloat(options.startx),
+    y: parseFloat(options.starty),
+    z: parseFloat(options.startz)
 };
 const end = {
-    x: options.endx,
-    y: options.endy,
-    z: options.endz
+    x: parseFloat(options.endx),
+    y: parseFloat(options.endy),
+    z: parseFloat(options.endz)
 };
 let offset = {
     plus: {
