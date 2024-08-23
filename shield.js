@@ -37,6 +37,7 @@ class MCBot {
         this.port = botArgs["port"];
         this.physicsEnabled = botArgs["physicsEnabled"]
         this.ready = false;
+this.started = false;
 
         this.initBot();
     }
@@ -71,6 +72,10 @@ class MCBot {
         return this.ready;
     }
 
+    isStarted() {
+        return this.started;
+    }
+
     initEvents() {
         this.bot.on("spawn", async () => {
             //console.log(`[${this.username}] Spawned...`);
@@ -78,10 +83,14 @@ class MCBot {
             if (this.bot.entity.position.x!=this.x || this.bot.entity.position.y!=this.y || this.bot.entity.position.z!=this.z) {
                 this.bot.chat(`/tp ${this.username} ${this.x} ${this.y} ${this.z} ${yaw} ${pitch}`);
             };
-            //this.giveShields();
+            this.giveShields();
             this.getShields();
 
-            //console.log(`[${this.username}] Ready!`);
+            // console.log(`[${this.username}] Ready!`);
+});
+        this.bot.on("chat", async (username, message) => {
+            if (username.startsWith(options.username)) return;
+            if (message.toLowerCase().startsWith("nagarete")) this.started = true;
         });
     };
 
@@ -167,8 +176,8 @@ let waitBots = function() {
     setTimeout(() => {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                if (bots[y][x] == undefined || !bots[y][x].isReady()) {
-                    console.log(`Bot ${y} ${x} is not ready yet`)
+                if (bots[y][x] == undefined || !bots[y][x].isReady() || !bots[y][x].isStarted()) {
+                    console.log(`Bot ${y} ${x} is not ready yet (is undefined: ${bots[y][x] == undefined}; isReady: ${bots[y][x].isReady()}; isStarted: ${bots[y][x].isStarted()}`)
                     waitBots();
                     return;
                 };
