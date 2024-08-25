@@ -322,30 +322,33 @@ size.start.y = Number(offset_list[1]);
 size.end.x = Number(options.width);
 size.end.y = Number(options.height);
 
-const width = size.end.y-size.start.y
-const height = size.end.x-size.start.x
+const width = size.end.x-size.start.x
+const height = size.end.y-size.start.y
 const start_x = parseFloat(options.startx)
 const start_y = parseFloat(options.starty)
 const start_z = parseFloat(options.startz)
 
 let bots = []
 
+let startMillisecond = 0;
+function getWaitUntilFrame(frame, fps) {
+  return (1000/fps*frame) - ((new Date()).getTime() - startMillisecond)
+}
+
 async function playOnce(animation, fps) {
+  startMillisecond = (new Date()).getTime()
   for (let frame = 0; frame < animation.length; frame++) {
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         bots[y][x].setShield(animation[frame][size.start.y+y][size.start.x+x]);
       };
     };
-    await sleep(1000/fps);
+    console.log(getWaitUntilFrame(frame, fps))
+    await sleep(getWaitUntilFrame(frame, fps));
   };
-//   for (let frame = 0; frame < animation.length; frame++) {
-//     setTimeout(() => {for (let y = 0; y < height; y++) {
-//         for (let x = 0; x < width; x++) {
-//             bots[y][x].setShield(animation[frame][y][x]);
-//         };
-//     };}, 1000/fps*frame);
-// };
+  console.log("SEBETE KOWASA NONARA KURO NI NARE! !")
+  console.log("Nani mo mitenai?")
+  isStarted = false;
 };
 
 async function waitBots(prev_y=null,prev_x=null,prev_count=0) {
