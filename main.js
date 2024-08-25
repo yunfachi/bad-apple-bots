@@ -335,15 +335,20 @@ function getWaitUntilFrame(frame, fps) {
   return (1000/fps*frame) - ((new Date()).getTime() - startMillisecond)
 }
 
+function getWaitUntilStart() {
+  return (10000-(new Date()).getTime()%10000)
+}
+
 async function playOnce(animation, fps) {
   startMillisecond = (new Date()).getTime()
+  console.log(`startMillisecond: ${startMillisecond}`)
   for (let frame = 0; frame < animation.length; frame++) {
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         bots[y][x].setShield(animation[frame][size.start.y+y][size.start.x+x]);
       };
     };
-    console.log(getWaitUntilFrame(frame, fps))
+    // console.log(getWaitUntilFrame(frame, fps))
     await sleep(getWaitUntilFrame(frame, fps));
   };
   console.log("SEBETE KOWASA NONARA KURO NI NARE! !")
@@ -373,14 +378,16 @@ async function waitBots(prev_y=null,prev_x=null,prev_count=0) {
 
 let isStarted = false
 
-function fuhrerBotChat(packet) {
+async function fuhrerBotChat(packet) {
   content = packet.plainMessage ?? packet.content?.value?.with?.value?.value[1]?.text?.value
   if (content == undefined) return;
 
   console.log(`[message-${(new Date()).getMilliseconds()}] ${JSON.stringify(content)}`)
   if (content.toLowerCase().startsWith("nagarete") && !isStarted) {
-    playOnce(GENERATED, 30);
-    console.log("NO NAKA DE DEMO!")
+    const sleepMilliseconds = getWaitUntilStart()
+    console.log(`NO NAKA DE DEMO! sleep: ${sleepMilliseconds}`)
+    await sleep(sleepMilliseconds)
+    playOnce(GENERATED, 30)
     isStarted = true
   }
 }
@@ -401,7 +408,7 @@ async function start() {
       if (isFirst) {
         isFirst = false
       }
-      // await sleep(10)
+      await sleep(1)
     }
     // await sleep(1080)
   }
