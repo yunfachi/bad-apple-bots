@@ -170,7 +170,7 @@ class MCBot {
     await this.clickWindow(sourceSlot, 0, 0)
     await this.clickWindow(destSlot, 0, 0)
     // this.activateItem()
-    // if (destSlot == 36) await this.clickWindow(sourceSlot, 0, 0)
+    if (destSlot == 36) await this.clickWindow(sourceSlot, 0, 0)
     // this.activateItem()
   }
 
@@ -191,7 +191,7 @@ class MCBot {
   color: 0 - black; 1 - white
   */
   setShield(pattern) {
-    this.activateItem()
+    // this.activateItem()
     const code = this.patternsMap[pattern]
     if (this.lastpattern != pattern) {
       this.moveSlotItem(code, 36)
