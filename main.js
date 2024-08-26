@@ -30,8 +30,26 @@ class MCBot {
     this.z = z
     this.ready = false
     this.alive = false
-    this.lastcolor = null
+    this.lastpattern = null
     this.isFirst = isFirst
+    this.patternsMap = {
+      "0000": 36, // {Base:15}
+      "0001": 37, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vh"}]}
+      "0010": 38, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vhr"}]}
+      "0011": 39, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"}]}
+      "0100": 40, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vh"}]} 
+      "0101": 41, // {Base:15,Patterns:[{Color:0,Pattern:"vhr"}]}
+      "0110": 42, // {Base:0,Patterns:[{Color:15,Pattern:"tl"},{Color:15,Pattern:"br"}]}
+      "0111": 43, // {Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vhr"}]}
+      "1000": 44, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vhr"}]}
+      "1001": 9,  // {Base:0,Patterns:[{Color:15,Pattern:"tr"},{Color:15,Pattern:"bl"}]}
+      "1010": 10, // {Base:15,Patterns:[{Color:0,Pattern:"vh"}]}
+      "1011": 11, // {Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vh"}]} 
+      "1100": 12, // {Base:15,Patterns:[{Color:0,Pattern:"hh"}]}
+      "1101": 13, // {Base:0,Patterns:[{Color:15,Pattern:"hhb"},{Color:0,Pattern:"vhr"}]}
+      "1110": 14, // {Base:0,Patterns:[{Color:15,Pattern:"hhb"},{Color:0,Pattern:"vh"}]}
+      "1111": 15, // {Base:0}
+    }
   
     this.initClient()
   }
@@ -56,10 +74,9 @@ class MCBot {
     console.log(`[${this.username}] spawned`)
     this.teleport()
     this.giveShields()
-    this.getShields()
     this.ready = true
     this.nextActionNumber = 0
-    this.lastcolor = null
+    this.lastpattern = "0000"
     this.activateItem()
   }
 
@@ -118,23 +135,31 @@ class MCBot {
   chat(text) { this.client.chat(text) }
 
   teleport() {
-    this.chat(`/tp ${this.username} ${this.x} ${this.y} ${this.z} ${yaw} ${pitch}`)
-    this.chat(`/tp ${this.x} ${this.y} ${this.z} ${yaw} ${pitch}`)
+    this.chat(`/tp ${this.username} ${this.x.toFixed(3)} ${this.y.toFixed(3)} ${this.z.toFixed(3)} ${yaw.toFixed(3)} ${pitch.toFixed(3)}`)
+    this.chat(`/tp ${this.x.toFixed(3)} ${this.y.toFixed(3)} ${this.z.toFixed(3)} ${yaw.toFixed(3)} ${pitch.toFixed(3)}`)
   }
 
   giveShields() {
     this.chat("/clear")
 
     this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vh"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vhr"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hhb"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vh"}]}}`) 
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"vhr"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"tl"},{Color:15,Pattern:"br"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vhr"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vhr"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"tr"},{Color:15,Pattern:"bl"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"vh"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vh"}]}}`) 
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:15,Patterns:[{Color:0,Pattern:"hh"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"hhb"},{Color:0,Pattern:"vhr"}]}}`)
+    this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0,Patterns:[{Color:15,Pattern:"hhb"},{Color:0,Pattern:"vh"}]}}`)
     this.chat(`/give ${this.username} shield{BlockEntityTag:{Base:0}}`)
-  }
 
-  getShields() {
-    this.shields = {
-      "0": this.inventory.items().find(item => item.nbt.value.BlockEntityTag.value.Base.value == 15),
-      "1": this.inventory.items().find(item => item.nbt.value.BlockEntityTag.value.Base.value == 0),
-    }
-    // console.log(this.inventory)
+    this.setQuickBarSlot(0) 
   }
 
   activateItem() {
@@ -144,12 +169,9 @@ class MCBot {
   async moveSlotItem (sourceSlot, destSlot) {
     await this.clickWindow(sourceSlot, 0, 0)
     await this.clickWindow(destSlot, 0, 0)
-    // if we're holding an item, put it back where the source item was.
-    // otherwise we're done.
-    // updateHeldItem()
-    // if (bot.inventory.selectedItem) {
-    //   await clickWindow(sourceSlot, 0, 0)
-    // }
+    // this.activateItem()
+    // if (destSlot == 36) await this.clickWindow(sourceSlot, 0, 0)
+    // this.activateItem()
   }
 
   async equip(item) {
@@ -168,17 +190,18 @@ class MCBot {
   /*
   color: 0 - black; 1 - white
   */
-  setShield(color, equip = true) {
-    // if (equip) {
-    if(this.lastcolor != color) {
-      this.setQuickBarSlot(color) 
-      this.activateItem()
-      this.lastcolor = color
+  setShield(pattern) {
+    this.activateItem()
+    const code = this.patternsMap[pattern]
+    if (this.lastpattern != pattern) {
+      this.moveSlotItem(code, 36)
+      console.log(this.username, pattern, this.lastpattern, code)
+      this.patternsMap[pattern] = 36
+      this.patternsMap[this.lastpattern] = code
+      this.lastpattern = pattern
+      // if (this.lastpattern == 36)
+      // this.activateItem()
     }
-    // } else {
-      // this.moveSlotItem(36+color, 36)
-
-    // }
   }
 
   createActionNumber () {
@@ -336,7 +359,7 @@ function getWaitUntilFrame(frame, fps) {
 }
 
 function getWaitUntilStart() {
-  return (10000-(new Date()).getTime()%10000)
+  return (1-(new Date()).getTime()%1)
 }
 
 async function playOnce(animation, fps) {
@@ -373,7 +396,7 @@ async function waitBots(prev_y=null,prev_x=null,prev_count=0) {
     }
   }
   console.log("NAGARETE KU TOKI...")
-  // playOnce(GENERATED, 30);
+  playOnce(GENERATED, 30);
 }
 
 let isStarted = false
@@ -400,7 +423,7 @@ async function start() {
     for (let x = 0; x < width; x++) {
       bots[y][x] = new MCBot(
         `${options.username}${y+size.start.y}_${x+size.start.x}`,
-        start_x-size.start.x-x,
+        start_x-size.start.x-x*0.65,
         start_y-size.start.y-y,
         start_z,
         isFirst

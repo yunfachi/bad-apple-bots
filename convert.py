@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 
-#TODO:  the difference between the start and end coordinates
-size = (32,32)
+size = (16, 10)  # width, height
 
 def video_to_array(path):
     video = cv2.VideoCapture(path)
@@ -13,10 +12,23 @@ def video_to_array(path):
         if not ret:
             break
 
-        frame = cv2.resize(frame, size) 
+        frame = cv2.resize(frame, size)
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         _, frame_binary = cv2.threshold(frame_gray, 128, 255, cv2.THRESH_BINARY)
-        frames.append((frame_binary // 255).tolist())
+
+        expanded_frame = []
+        for i in range(0, size[1]):  # Проход по высоте кадра
+            row = []
+            for j in range(0, size[0]):  # Проход по ширине кадра
+                top_left = frame_binary[i, j]
+                top_right = frame_binary[i, (j + 1) % size[0]]
+                bottom_left = frame_binary[(i + 1) % size[1], j]
+                bottom_right = frame_binary[(i + 1) % size[1], (j + 1) % size[0]]
+                element = f"{top_left // 255}{top_right // 255}{bottom_left // 255}{bottom_right // 255}"
+                row.append(element)
+            expanded_frame.append(row)
+        
+        frames.append(expanded_frame)
 
     video.release()
     return frames
