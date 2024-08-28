@@ -2,6 +2,15 @@ const mc = require("minecraft-protocol")
 const program = require("commander").program
 const GENERATED = require("./generated.js").GENERATED;
 
+// const GENERATED = [
+  // [
+    // ['0000', '0001', '0010', '0011'],
+    // ['0100', '0101', '0110', '0111'],
+    // ['1000', '1001', '1010', '1011'],
+    // ['1100', '1101', '1110', '1111'],
+  // ]
+// ]
+
 program
   .option("-H, --host <host>", "", "localhost")
   .option("-p, --port <port>", "", "25565")
@@ -33,15 +42,15 @@ class MCBot {
     this.lastpattern = null
     this.isFirst = isFirst
     this.patternsMap = {
-      "0000": 36, // {Base:15}
-      "0001": 37, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vh"}]}
-      "0010": 38, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vhr"}]}
-      "0011": 39, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"}]}
-      "0100": 40, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vh"}]} 
-      "0101": 41, // {Base:15,Patterns:[{Color:0,Pattern:"vhr"}]}
-      "0110": 42, // {Base:0,Patterns:[{Color:15,Pattern:"tl"},{Color:15,Pattern:"br"}]}
-      "0111": 43, // {Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vhr"}]}
-      "1000": 44, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vhr"}]}
+      "0000": 0, // {Base:15}
+      "0001": 1, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vh"}]}
+      "0010": 2, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"},{Color:15,Pattern:"vhr"}]}
+      "0011": 3, // {Base:15,Patterns:[{Color:0,Pattern:"hhb"}]}
+      "0100": 4, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vh"}]} 
+      "0101": 5, // {Base:15,Patterns:[{Color:0,Pattern:"vhr"}]}
+      "0110": 6, // {Base:0,Patterns:[{Color:15,Pattern:"tl"},{Color:15,Pattern:"br"}]}
+      "0111": 7, // {Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vhr"}]}
+      "1000": 8, // {Base:15,Patterns:[{Color:0,Pattern:"hh"},{Color:15,Pattern:"vhr"}]}
       "1001": 9,  // {Base:0,Patterns:[{Color:15,Pattern:"tr"},{Color:15,Pattern:"bl"}]}
       "1010": 10, // {Base:15,Patterns:[{Color:0,Pattern:"vh"}]}
       "1011": 11, // {Base:0,Patterns:[{Color:15,Pattern:"hh"},{Color:0,Pattern:"vh"}]} 
@@ -194,13 +203,19 @@ class MCBot {
     // this.activateItem()
     const code = this.patternsMap[pattern]
     if (this.lastpattern != pattern) {
-      this.moveSlotItem(code, 36)
-      console.log(this.username, pattern, this.lastpattern, code)
-      this.patternsMap[pattern] = 36
-      this.patternsMap[this.lastpattern] = code
-      this.lastpattern = pattern
+      // this.moveSlotItem(code, 36)
+      // console.log(this.username, pattern, this.lastpattern, code)
+      // this.patternsMap[pattern] = 36
+      // this.patternsMap[this.lastpattern] = code
+      // this.lastpattern = pattern
       // if (this.lastpattern == 36)
       // this.activateItem()
+
+      // console.log(this.username, pattern, this.lastpattern, code)
+      // this.client.write(110+parseInt(pattern,2), ``)
+      // this.client.write("0x78", {})
+      this.setQuickBarSlot(code)
+      this.lastpattern = pattern
     }
   }
 
@@ -359,7 +374,7 @@ function getWaitUntilFrame(frame, fps) {
 }
 
 function getWaitUntilStart() {
-  return (1-(new Date()).getTime()%1)
+  return (15000-(new Date()).getTime()%15000)
 }
 
 async function playOnce(animation, fps) {
@@ -423,7 +438,7 @@ async function start() {
     for (let x = 0; x < width; x++) {
       bots[y][x] = new MCBot(
         `${options.username}${y+size.start.y}_${x+size.start.x}`,
-        start_x-size.start.x-x*0.65,
+        start_x-size.start.x*0.65-x*0.65,
         start_y-size.start.y-y,
         start_z,
         isFirst
@@ -433,7 +448,7 @@ async function start() {
       }
       await sleep(1)
     }
-    // await sleep(1080)
+    //await sleep(5)
   }
   await waitBots()
 }

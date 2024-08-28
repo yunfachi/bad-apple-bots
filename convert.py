@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-size = (16, 10)  # width, height
+size = (69, 36)
 
 def video_to_array(path):
     video = cv2.VideoCapture(path)
@@ -17,13 +17,15 @@ def video_to_array(path):
         _, frame_binary = cv2.threshold(frame_gray, 128, 255, cv2.THRESH_BINARY)
 
         expanded_frame = []
-        for i in range(0, size[1]):  # Проход по высоте кадра
+        for i in range(size[1]):
             row = []
-            for j in range(0, size[0]):  # Проход по ширине кадра
+            for j in range(size[0]):
                 top_left = frame_binary[i, j]
-                top_right = frame_binary[i, (j + 1) % size[0]]
-                bottom_left = frame_binary[(i + 1) % size[1], j]
-                bottom_right = frame_binary[(i + 1) % size[1], (j + 1) % size[0]]
+
+                top_right = frame_binary[i, j + 1] if j + 1 < size[0] else top_left
+                bottom_left = frame_binary[i + 1, j] if i + 1 < size[1] else top_left
+                bottom_right = frame_binary[i + 1, j + 1] if i + 1 < size[1] and j + 1 < size[0] else top_left
+
                 element = f"{top_left // 255}{top_right // 255}{bottom_left // 255}{bottom_right // 255}"
                 row.append(element)
             expanded_frame.append(row)
